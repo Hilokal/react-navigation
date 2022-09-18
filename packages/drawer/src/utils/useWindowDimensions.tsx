@@ -28,9 +28,16 @@ export default function useWindowDimensions() {
     // So make sure to update the dimensions
     onChange({ window: Dimensions.get('window') });
 
-    Dimensions.addEventListener('change', onChange);
+    const listener = Dimensions.addEventListener('change', onChange);
 
-    return () => Dimensions.removeEventListener('change', onChange);
+    return () => {
+      if (listener == null) {
+        Dimensions.removeEventListener('change', onChange);
+      } else {
+        // @ts-ignore missing updated typedefs for remove()
+        listener.remove();
+      }
+    };
   }, []);
 
   return dimensions;
